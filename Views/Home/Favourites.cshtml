@@ -33,9 +33,15 @@
         </div>
     }
     else
-    {
-        <div class="text-center">
-            <h4>You haven't added any products to your favourites yet.</h4>
-            </div>
-    }
+{
+    <div class="text-center my-5">
+        <img src="/images/nofavs.png" alt="No favourites" style="max-width: 250px;" class="mb-4" />
+        <h4>No favourites yet ❤️</h4>
+        <p class="text-muted">Save your favourite items and view them here later.</p>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">
+            🛍️ Continue Shopping
+        </a>
+    </div>
+}
+
 </div>

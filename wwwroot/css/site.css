@@ -3,11 +3,21 @@
 
 /* --- Base Styles & Fixes --- */
 body {
-    /* New ANIMATED Gradient Background for Light Mode */
+    /* Sticky Footer Styles */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    
+    /* Animated Gradient Background for Light Mode */
     background: linear-gradient(-45deg, #eef2f3, #d6e4ea, #c4d7e0, #a9c2d1);
     background-size: 400% 400%;
     animation: gradient-scroll 15s ease infinite;
     background-attachment: fixed;
+}
+
+/* Added for Sticky Footer */
+.container {
+    flex-grow: 1;
 }
 
 .product-link, .product-link:hover {
@@ -259,4 +269,115 @@ body.dark-mode .navbar-brand {
     100% {
         background-position: 0% 50%;
     }
+}
+/*
+=========================================
+  CLICKABLE CARD STYLES
+=========================================
+*/
+
+/* Makes the link wrapper fill the card */
+.card-link-wrapper {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    flex-grow: 1; /* Helps fill the space in the flex container */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensures the card body expands correctly inside the link */
+.card-link-wrapper .card-body {
+    flex-grow: 1;
+}
+
+/* Add a hover effect to the entire card */
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .product-card:hover {
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.25);
+}
+/* === Dark Mode Navbar & Dropdown Enhancements === */
+body.dark-mode .navbar {
+    background-color: #1a1a1a !important;
+    border-bottom: 1px solid #333;
+}
+body.dark-mode .nav-link {
+    color: #e0e0e0 !important;
+    transition: color 0.3s, text-shadow 0.3s;
+}
+body.dark-mode .nav-link:hover {
+    color: #58abff !important;
+    text-shadow: 0 0 8px rgba(88,171,255,0.8);
+}
+
+/* Dropdown hover glow */
+body.dark-mode .dropdown-item:hover {
+    background-color: #222;
+    color: #58abff !important;
+    text-shadow: 0 0 6px rgba(88,171,255,0.8);
+}
+
+/* === Dark Mode Buttons === */
+body.dark-mode .btn-primary {
+    background-color: #007bff;
+    border: none;
+    color: #fff;
+    transition: background 0.3s, box-shadow 0.3s;
+}
+body.dark-mode .btn-primary:hover {
+    background-color: #0056b3;
+    box-shadow: 0 0 10px rgba(88,171,255,0.6);
+}
+body.dark-mode .btn-outline-primary {
+    color: #58abff;
+    border: 1px solid #58abff;
+}
+body.dark-mode .btn-outline-primary:hover {
+    background-color: #58abff;
+    color: #fff;
+    box-shadow: 0 0 10px rgba(88,171,255,0.6);
+}
+
+/* === Dark Mode Alerts === */
+body.dark-mode .alert {
+    border-radius: 8px;
+}
+body.dark-mode .alert-primary {
+    background: rgba(0,123,255,0.15);
+    color: #58abff;
+    border: 1px solid #58abff;
+}
+body.dark-mode .alert-success {
+    background: rgba(40,167,69,0.15);
+    color: #28a745;
+    border: 1px solid #28a745;
+}
+body.dark-mode .alert-danger {
+    background: rgba(220,53,69,0.15);
+    color: #dc3545;
+    border: 1px solid #dc3545;
+}
+body.dark-mode .alert-warning {
+    background: rgba(255,193,7,0.15);
+    color: #ffc107;
+    border: 1px solid #ffc107;
+}
+
+/* === Dark Mode Form Focus Glow === */
+body.dark-mode .form-control {
+    background-color: #2a2a2a;
+    color: #f5f5f5;
+    border: 1px solid #555;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+body.dark-mode .form-control:focus {
+    border-color: #58abff;
+    box-shadow: 0 0 8px rgba(88,171,255,0.4);
+}
+body.dark-mode label {
+    color: #ddd;
 }

@@ -13,6 +13,10 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "F:\\RamCharan\\Projects\\ECommercePortfolio\\wwwroot\\images\\emptycart.png",
+      "PackagePath": "staticwebassets\\images\\emptycart.png"
+    },
+    {
       "Id": "F:\\RamCharan\\Projects\\ECommercePortfolio\\wwwroot\\images\\jeans.png",
       "PackagePath": "staticwebassets\\images\\jeans.png"
     },
@@ -23,6 +27,10 @@
     {
       "Id": "F:\\RamCharan\\Projects\\ECommercePortfolio\\wwwroot\\images\\jeans2.png",
       "PackagePath": "staticwebassets\\images\\jeans2.png"
+    },
+    {
+      "Id": "F:\\RamCharan\\Projects\\ECommercePortfolio\\wwwroot\\images\\nofavs.png",
+      "PackagePath": "staticwebassets\\images\\nofavs.png"
     },
     {
       "Id": "F:\\RamCharan\\Projects\\ECommercePortfolio\\wwwroot\\images\\shirt1.png",

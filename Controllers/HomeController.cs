@@ -7,11 +7,6 @@ namespace ECommercePortfolio.Controllers;
 
 public class HomeController : Controller
 {
-    // --- TEMPORARY TEST ---
-    // We are storing favorites in a static list on the server
-    // instead of the user's session.
-    private static List<int> _temporaryFavourites = new List<int>();
-
     // The product data has been restored in this list
     private static readonly List<Product> _products = new List<Product>
     {
@@ -28,6 +23,11 @@ public class HomeController : Controller
 
     public IActionResult Index(string searchString, string category, string sortOrder)
     {
+        if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+{
+    return RedirectToAction("Login", "Account");
+}
+
         ViewData["CurrentFilter"] = searchString;
         ViewData["CurrentCategory"] = category;
         ViewData["CurrentSortOrder"] = sortOrder;
@@ -57,32 +57,50 @@ public class HomeController : Controller
                 products = products.OrderBy(p => p.Name ?? "");
                 break;
         }
-        
-        // MODIFIED FOR TEST: Get favourites from the static list
-        ViewData["Favourites"] = _temporaryFavourites;
-        
+
+        ViewData["Favourites"] = HttpContext.Session.Get<List<int>>("Favourites") ?? new List<int>();
         var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
         ViewData["ProductIdsInCart"] = cart.Select(item => item.Product?.Id).ToList();
 
         return View(products.ToList());
+
     }
 
-    public IActionResult ProductDetails(int id)
+  public IActionResult ProductDetails(int id)
+{
+    if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+{
+    return RedirectToAction("Login", "Account");
+}
+
+    var product = _products.FirstOrDefault(p => p.Id == id);
+    if (product == null)
     {
-        var product = _products.FirstOrDefault(p => p.Id == id);
-        if (product == null)
-        {
-            return NotFound();
-        }
-        var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
-        ViewData["ProductIdsInCart"] = cart.Select(item => item.Product?.Id).ToList();
-        return View(product);
+        return NotFound();
     }
-    
-    // MODIFIED FOR TEST: Uses the static list instead of the session
+
+    var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+    ViewData["Cart"] = cart;   // Send the full cart to view
+
+    return View(product);
+}
+
+
+
+
+    // MODIFIED: Added debug logging
     public IActionResult ToggleFavourite(int id)
     {
-        var favourites = _temporaryFavourites; // Using the static list
+        if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+{
+    return RedirectToAction("Login", "Account");
+}
+
+        var favourites = HttpContext.Session.Get<List<int>>("Favourites") ?? new List<int>();
+        
+        // --- DEBUG LOGGING ---
+        Console.WriteLine($"--- ToggleFavourite (Product ID: {id}) ---");
+        Console.WriteLine($"Favorites BEFORE toggling: [{string.Join(", ", favourites)}]");
 
         if (favourites.Contains(id))
         {
@@ -93,57 +111,195 @@ public class HomeController : Controller
             favourites.Add(id);
         }
         
+        HttpContext.Session.Set("Favourites", favourites);
+
+        // --- DEBUG LOGGING ---
+        Console.WriteLine($"Favorites AFTER toggling: [{string.Join(", ", favourites)}]");
+        Console.WriteLine("---------------------------------------------");
+
         return RedirectToAction("Index");
     }
 
-    // MODIFIED FOR TEST: Uses the static list instead of the session
+    // MODIFIED: Added debug logging
     public IActionResult Favourites()
     {
-        var favouriteIds = _temporaryFavourites; // Using the static list
+        if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+{
+    return RedirectToAction("Login", "Account");
+}
+
+        var favouriteIds = HttpContext.Session.Get<List<int>>("Favourites") ?? new List<int>();
+
+        // --- DEBUG LOGGING ---
+        Console.WriteLine($"--- Favourites Page Loaded ---");
+        Console.WriteLine($"Favorites loaded from session: [{string.Join(", ", favouriteIds)}]");
+        Console.WriteLine("---------------------------------------------");
+
         var favouriteProducts = _products.Where(p => favouriteIds.Contains(p.Id)).ToList();
         return View(favouriteProducts);
     }
 
     [HttpPost]
-    public IActionResult AddToCartConfirmed(int id, int quantity, string size)
+public IActionResult AddToCartConfirmed(int id, int quantity, string size)
+{
+    if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+{
+    return RedirectToAction("Login", "Account");
+}
+
+    var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+    var product = _products.FirstOrDefault(p => p.Id == id);
+
+    if (product != null)
     {
-        var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
-        var product = _products.FirstOrDefault(p => p.Id == id);
-        if (product != null)
+        // ✅ Find by Product + Size
+        var existingItem = cart.FirstOrDefault(item => item.Product?.Id == id && item.Size == size);
+
+        if (existingItem != null)
         {
-            cart.Add(new CartItem { Product = product, Quantity = quantity, Size = size });
-            HttpContext.Session.Set("Cart", cart);
+            if (existingItem.Quantity + quantity > 3)
+            {
+                TempData["CartError"] = $"You can only order up to 3 units of {product.Name} (Size: {size}).";
+            }
+            else
+            {
+                existingItem.Quantity += quantity;
+            }
         }
-        return RedirectToAction("Cart");
+        else
+        {
+            if (quantity > 3)
+            {
+                TempData["CartError"] = $"You can only order up to 3 units of {product.Name} (Size: {size}).";
+            }
+            else
+            {
+                cart.Add(new CartItem { Product = product, Quantity = quantity, Size = size });
+            }
+        }
+
+        HttpContext.Session.Set("Cart", cart);
     }
 
-    public IActionResult Cart()
+    return RedirectToAction("Cart");
+}
+
+
+
+   public IActionResult Cart()
+{
+    if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+{
+    return RedirectToAction("Login", "Account");
+}
+
+    var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+
+    // Detect referer (previous page URL)
+    var referer = Request.Headers["Referer"].ToString();
+
+    if (!string.IsNullOrEmpty(referer))
     {
-        var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
-        return View(cart);
+        if (referer.Contains("/Home/ProductDetails"))
+        {
+            ViewData["GoBackUrl"] = referer; // back to Product Details
+        }
+        else if (referer.Contains("/Home/Favourites"))
+        {
+            ViewData["GoBackUrl"] = Url.Action("Favourites", "Home"); // back to Favourites
+        }
+        else
+        {
+            ViewData["GoBackUrl"] = Url.Action("Index", "Home"); // back to Home
+        }
     }
+    else
+    {
+        ViewData["GoBackUrl"] = Url.Action("Index", "Home"); // default
+    }
+
+    return View(cart);
+}
+
+
 
     [HttpPost]
-    public IActionResult RemoveFromCart(int id)
+public IActionResult RemoveFromCart(int id, string size)
+{
+    if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+{
+    return RedirectToAction("Login", "Account");
+}
+
+    var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+
+    // Find by product + size
+    var itemToRemove = cart.FirstOrDefault(item => item.Product?.Id == id && item.Size == size);
+    if (itemToRemove != null)
     {
-        var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
-        var itemToRemove = cart.FirstOrDefault(item => item.Product?.Id == id);
-        if (itemToRemove != null)
-        {
-            cart.Remove(itemToRemove);
-        }
-        HttpContext.Session.Set("Cart", cart);
-        return RedirectToAction("Cart");
+        cart.Remove(itemToRemove);
     }
+
+    HttpContext.Session.Set("Cart", cart);
+    return RedirectToAction("Cart");
+}
+
+
+   [HttpPost]
+public IActionResult UpdateCartQuantity(int id, string size, int change)
+{
+    if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+{
+    return RedirectToAction("Login", "Account");
+}
+
+    var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+    var item = cart.FirstOrDefault(i => i.Product?.Id == id && i.Size == size);
+
+    if (item != null)
+    {
+        if (change > 0 && item.Quantity >= 3)
+        {
+            TempData["CartError"] = $"You can only order up to 3 units of {item.Product?.Name} ({item.Size}).";
+        }
+        else
+        {
+            item.Quantity += change;
+
+            if (item.Quantity <= 0)
+            {
+                cart.Remove(item);
+            }
+
+            HttpContext.Session.Set("Cart", cart);
+        }
+    }
+
+    return RedirectToAction("Cart");
+}
+
+
 
     public IActionResult Privacy()
     {
+        if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+{
+    return RedirectToAction("Login", "Account");
+}
+
         return View();
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
+        if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+{
+    return RedirectToAction("Login", "Account");
+}
+
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
+
+    
 }

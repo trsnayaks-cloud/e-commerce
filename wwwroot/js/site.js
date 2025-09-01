@@ -22,20 +22,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // --- Custom Loading Animation (Integrated) ---
-    // Note: Your existing code for this was already excellent!
     const productLinks = document.querySelectorAll('.product-link');
     const loadingAnimation = document.querySelector('.loading');
     if (loadingAnimation) {
         productLinks.forEach(link => {
             link.addEventListener('click', function (event) {
-                // Prevent the link from navigating immediately
                 event.preventDefault(); 
                 const destinationUrl = this.href;
-
-                // Show the loading animation
                 loadingAnimation.style.display = 'block';
-
-                // Wait for the animation to be visible, then navigate
                 setTimeout(function () {
                     window.location.href = destinationUrl;
                 }, 2000); // 2-second loading time
@@ -43,31 +37,19 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // --- Favourite Icon Toggle ---
-    const favouriteIcons = document.querySelectorAll('.favourite-icon');
-    favouriteIcons.forEach(icon => {
-        icon.addEventListener('click', function (event) {
-            event.preventDefault(); // Prevent the link from navigating anywhere
-            event.stopPropagation(); // Stop the click from triggering the main card link
-            this.classList.toggle('active');
-        });
-    });
-
     // --- Dark Mode Theme Switcher ---
     const themeSwitch = document.getElementById('themeSwitch');
     if (themeSwitch) {
-        // Function to set the theme
         function setTheme(isDark) {
             if (isDark) {
                 document.body.classList.add('dark-mode');
-                localStorage.setItem('theme', 'dark'); // Save theme preference
+                localStorage.setItem('theme', 'dark');
             } else {
                 document.body.classList.remove('dark-mode');
-                localStorage.setItem('theme', 'light'); // Save theme preference
+                localStorage.setItem('theme', 'light');
             }
         }
 
-        // Check for saved theme in localStorage on page load
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark') {
             themeSwitch.checked = true;
@@ -77,7 +59,6 @@ document.addEventListener('DOMContentLoaded', function () {
             setTheme(false);
         }
 
-        // Listener for when the switch is clicked
         themeSwitch.addEventListener('change', function () {
             setTheme(this.checked);
         });

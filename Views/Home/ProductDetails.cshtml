@@ -1,6 +1,9 @@
+@using System.Text.Json
 @model Product
 @{
     ViewData["Title"] = @Model.Name;
+    var cart = ViewData["Cart"] as List<CartItem> ?? new List<CartItem>();
+    var cartJson = JsonSerializer.Serialize(cart, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 }
 
 <div class="container mt-5">
@@ -10,41 +13,96 @@
             <img src="@Model.ImageUrl" class="img-fluid rounded product-details-img" alt="@Model.Name">
         </div>
         <div class="col-md-6">
-            <form asp-action="AddToCartConfirmed" asp-controller="Home" method="post">
+
+            <h2>@Model.Name</h2>
+            <p class="text-muted">@Model.Description</p>
+            
+            <div class="price-container-details">
+                <span class="display-4 font-weight-bold text-primary">$@Model.Price</span>
+                @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
+                {
+                    <span class="original-price-details text-muted h4"><s>$@Model.OriginalPrice</s></span>
+                    var discount = Math.Round((1 - (Model.Price / Model.OriginalPrice.Value)) * 100);
+                    <span class="discount-badge-details">@discount% OFF</span>
+                }
+            </div>
+            
+            <hr>
+
+            <!-- Add to Cart Form -->
+            <form id="addToCartForm" asp-action="AddToCartConfirmed" asp-controller="Home" method="post">
                 <input type="hidden" name="id" value="@Model.Id" />
-
-                <h2>@Model.Name</h2>
-                <p class="text-muted">@Model.Description</p>
-                
-                <div class="price-container-details">
-                    <span class="display-4 font-weight-bold text-primary">$@Model.Price</span>
-                     @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
-                    {
-                        <span class="original-price-details text-muted h4"><s>$@Model.OriginalPrice</s></span>
-                        var discount = Math.Round((1 - (Model.Price / Model.OriginalPrice.Value)) * 100);
-                        <span class="discount-badge-details">@discount% OFF</span>
-                    }
-                </div>
-                
-                <hr>
+                <input type="hidden" name="quantity" value="1" /> <!-- Always default 1 -->
 
                 <div class="form-group my-3">
-                    <label for="sizeSelect"><h5>Size</h5></label>
-                    <select class="form-control" name="size" id="sizeSelect">
-                        <option>Small</option>
-                        <option>Medium</option>
-                        <option>Large</option>
-                        <option>X-Large</option>
-                    </select>
+                    <label class="form-label"><h5>Size</h5></label>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <input type="radio" class="btn-check" name="size" id="sizeS" value="Small" autocomplete="off" required>
+                        <label class="btn btn-outline-primary rounded-pill px-4" for="sizeS">S</label>
+
+                        <input type="radio" class="btn-check" name="size" id="sizeM" value="Medium" autocomplete="off">
+                        <label class="btn btn-outline-primary rounded-pill px-4" for="sizeM">M</label>
+
+                        <input type="radio" class="btn-check" name="size" id="sizeL" value="Large" autocomplete="off">
+                        <label class="btn btn-outline-primary rounded-pill px-4" for="sizeL">L</label>
+
+                        <input type="radio" class="btn-check" name="size" id="sizeXL" value="X-Large" autocomplete="off">
+                        <label class="btn btn-outline-primary rounded-pill px-4" for="sizeXL">XL</label>
+                    </div>
                 </div>
 
-                <div class="form-group my-3">
-                    <label for="quantitySelect"><h5>Quantity</h5></label>
-                    <input type="number" class="form-control" name="quantity" id="quantitySelect" value="1" min="1">
+                <!-- Dynamic button -->
+                <div id="actionButtonContainer">
+                    <button type="submit" class="btn btn-primary btn-lg btn-block mt-4">
+                        Add to Cart
+                    </button>
                 </div>
-
-                <button type="submit" class="btn btn-success btn-lg btn-block mt-4">Confirm & Add to Cart</button>
             </form>
         </div>
     </div>
 </div>
+
+@section Scripts {
+<script>
+    const cart = @Html.Raw(cartJson);
+    const productId = @Model.Id;
+
+    function updateActionButton() {
+        const selectedSize = document.querySelector('input[name="size"]:checked')?.value;
+        const container = document.getElementById("actionButtonContainer");
+
+        if (!selectedSize) {
+            container.innerHTML = `
+                <button type="submit" class="btn btn-primary btn-lg btn-block mt-4" disabled>
+                    Select a Size
+                </button>
+            `;
+            return;
+        }
+
+        const exists = cart.some(item => 
+            item.product && item.product.id === productId && item.size === selectedSize
+        );
+
+        if (exists) {
+            container.innerHTML = `
+                <a href="/Home/Cart" class="btn btn-success btn-lg btn-block mt-4">
+                    ✅ Go to Cart
+                </a>
+            `;
+        } else {
+            container.innerHTML = `
+                <button type="submit" class="btn btn-primary btn-lg btn-block mt-4">
+                    Add to Cart
+                </button>
+            `;
+        }
+    }
+
+    document.querySelectorAll('input[name="size"]').forEach(radio => {
+        radio.addEventListener("change", updateActionButton);
+    });
+
+    updateActionButton(); // Run once on page load
+</script>
+}

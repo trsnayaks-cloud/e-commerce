@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "TnCB40d96fG82y3x0/Gyr48M2pOY9F511ScbdtXvrdc=",
+  "Hash": "M+BgGTjtLeBzaFyx+OYasnaKEHT9nYh97YwbO6ULL3Y=",
   "Source": "ECommercePortfolio",
   "BasePath": "_content/ECommercePortfolio",
   "Mode": "Default",
@@ -93,6 +93,25 @@
       "OriginalItemSpec": "wwwroot\\favicon.ico"
     },
     {
+      "Identity": "F:\\RamCharan\\Projects\\ECommercePortfolio\\wwwroot\\images\\emptycart.png",
+      "SourceId": "ECommercePortfolio",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\RamCharan\\Projects\\ECommercePortfolio\\wwwroot\\",
+      "BasePath": "_content/ECommercePortfolio",
+      "RelativePath": "images/emptycart.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\emptycart.png"
+    },
+    {
       "Identity": "F:\\RamCharan\\Projects\\ECommercePortfolio\\wwwroot\\images\\jeans.png",
       "SourceId": "ECommercePortfolio",
       "SourceType": "Discovered",
@@ -148,6 +167,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\images\\jeans2.png"
+    },
+    {
+      "Identity": "F:\\RamCharan\\Projects\\ECommercePortfolio\\wwwroot\\images\\nofavs.png",
+      "SourceId": "ECommercePortfolio",
+      "SourceType": "Discovered",
+      "ContentRoot": "F:\\RamCharan\\Projects\\ECommercePortfolio\\wwwroot\\",
+      "BasePath": "_content/ECommercePortfolio",
+      "RelativePath": "images/nofavs.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\nofavs.png"
     },
     {
       "Identity": "F:\\RamCharan\\Projects\\ECommercePortfolio\\wwwroot\\images\\shirt1.png",
