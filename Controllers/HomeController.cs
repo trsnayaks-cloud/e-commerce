@@ -7,6 +7,11 @@ namespace ECommercePortfolio.Controllers;
 
 public class HomeController : Controller
 {
+    // --- TEMPORARY TEST ---
+    // We are storing favorites in a static list on the server
+    // instead of the user's session.
+    private static List<int> _temporaryFavourites = new List<int>();
+
     // The product data has been restored in this list
     private static readonly List<Product> _products = new List<Product>
     {
@@ -31,7 +36,8 @@ public class HomeController : Controller
 
         if (!String.IsNullOrEmpty(searchString))
         {
-            products = products.Where(p => p.Name!.ToLower().Contains(searchString.ToLower()) || p.Description!.ToLower().Contains(searchString.ToLower()));
+            products = products.Where(p => (p.Name != null && p.Name.ToLower().Contains(searchString.ToLower())) ||
+                                           (p.Description != null && p.Description.ToLower().Contains(searchString.ToLower())));
         }
 
         if (!String.IsNullOrEmpty(category) && category != "All")
@@ -48,11 +54,16 @@ public class HomeController : Controller
                 products = products.OrderBy(p => p.Price);
                 break;
             default:
-                products = products.OrderBy(p => p.Name);
+                products = products.OrderBy(p => p.Name ?? "");
                 break;
         }
         
-        ViewData["Favourites"] = HttpContext.Session.Get<List<int>>("Favourites") ?? new List<int>();
+        // MODIFIED FOR TEST: Get favourites from the static list
+        ViewData["Favourites"] = _temporaryFavourites;
+        
+        var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+        ViewData["ProductIdsInCart"] = cart.Select(item => item.Product?.Id).ToList();
+
         return View(products.ToList());
     }
 
@@ -63,12 +74,16 @@ public class HomeController : Controller
         {
             return NotFound();
         }
+        var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+        ViewData["ProductIdsInCart"] = cart.Select(item => item.Product?.Id).ToList();
         return View(product);
     }
-
+    
+    // MODIFIED FOR TEST: Uses the static list instead of the session
     public IActionResult ToggleFavourite(int id)
     {
-        var favourites = HttpContext.Session.Get<List<int>>("Favourites") ?? new List<int>();
+        var favourites = _temporaryFavourites; // Using the static list
+
         if (favourites.Contains(id))
         {
             favourites.Remove(id);
@@ -77,13 +92,14 @@ public class HomeController : Controller
         {
             favourites.Add(id);
         }
-        HttpContext.Session.Set("Favourites", favourites);
+        
         return RedirectToAction("Index");
     }
 
+    // MODIFIED FOR TEST: Uses the static list instead of the session
     public IActionResult Favourites()
     {
-        var favouriteIds = HttpContext.Session.Get<List<int>>("Favourites") ?? new List<int>();
+        var favouriteIds = _temporaryFavourites; // Using the static list
         var favouriteProducts = _products.Where(p => favouriteIds.Contains(p.Id)).ToList();
         return View(favouriteProducts);
     }
@@ -105,6 +121,19 @@ public class HomeController : Controller
     {
         var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
         return View(cart);
+    }
+
+    [HttpPost]
+    public IActionResult RemoveFromCart(int id)
+    {
+        var cart = HttpContext.Session.Get<List<CartItem>>("Cart") ?? new List<CartItem>();
+        var itemToRemove = cart.FirstOrDefault(item => item.Product?.Id == id);
+        if (itemToRemove != null)
+        {
+            cart.Remove(itemToRemove);
+        }
+        HttpContext.Session.Set("Cart", cart);
+        return RedirectToAction("Cart");
     }
 
     public IActionResult Privacy()

@@ -1,10 +1,14 @@
+using ECommercePortfolio.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Add these two lines to configure session state
+// Configure the distributed memory cache
 builder.Services.AddDistributedMemoryCache();
+
+// Configure session options
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -12,17 +16,20 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-
 var app = builder.Build();
 
-// ... (rest of the file)
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+}
 
-app.UseHttpsRedirection();
+// REMOVED: app.UseHttpsRedirection(); was here. We remove it to simplify local debugging.
+
 app.UseStaticFiles();
 
 app.UseRouting();
 
-// Add this line to enable session
 app.UseSession();
 
 app.UseAuthorization();

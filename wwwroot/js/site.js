@@ -1,4 +1,6 @@
-﻿document.addEventListener('DOMContentLoaded', function () {
+﻿// File: wwwroot/js/site.js
+
+document.addEventListener('DOMContentLoaded', function () {
     // --- 3D Hover Effect for Product Cards ---
     const cards = document.querySelectorAll('.product-card');
     cards.forEach(card => {
@@ -19,15 +21,21 @@
         });
     });
 
-    // --- Custom Loading Animation with Delay ---
+    // --- Custom Loading Animation (Integrated) ---
+    // Note: Your existing code for this was already excellent!
     const productLinks = document.querySelectorAll('.product-link');
     const loadingAnimation = document.querySelector('.loading');
     if (loadingAnimation) {
         productLinks.forEach(link => {
             link.addEventListener('click', function (event) {
-                event.preventDefault();
+                // Prevent the link from navigating immediately
+                event.preventDefault(); 
                 const destinationUrl = this.href;
+
+                // Show the loading animation
                 loadingAnimation.style.display = 'block';
+
+                // Wait for the animation to be visible, then navigate
                 setTimeout(function () {
                     window.location.href = destinationUrl;
                 }, 2000); // 2-second loading time

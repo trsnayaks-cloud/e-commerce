@@ -13,6 +13,7 @@ F:\RamCharan\Projects\ECommercePortfolio\obj\Debug\net8.0\ECommercePortfolio.csp
 F:\RamCharan\Projects\ECommercePortfolio\obj\Debug\net8.0\ECommercePortfolio.MvcApplicationPartsAssemblyInfo.cache
 F:\RamCharan\Projects\ECommercePortfolio\obj\Debug\net8.0\ECommercePortfolio.RazorAssemblyInfo.cache
 F:\RamCharan\Projects\ECommercePortfolio\obj\Debug\net8.0\ECommercePortfolio.RazorAssemblyInfo.cs
+F:\RamCharan\Projects\ECommercePortfolio\obj\Debug\net8.0\ECommercePortfolio.sourcelink.json
 F:\RamCharan\Projects\ECommercePortfolio\obj\Debug\net8.0\staticwebassets.build.json
 F:\RamCharan\Projects\ECommercePortfolio\obj\Debug\net8.0\staticwebassets.development.json
 F:\RamCharan\Projects\ECommercePortfolio\obj\Debug\net8.0\staticwebassets\msbuild.ECommercePortfolio.Microsoft.AspNetCore.StaticWebAssets.props

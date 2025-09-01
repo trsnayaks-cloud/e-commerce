@@ -6,6 +6,10 @@
 <div class="container mt-5">
     <h1 class="mb-4">Shopping Cart</h1>
 
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary mb-4">
+        <i class="bi bi-house-door-fill"></i> Back to Home
+    </a>
+
     @if (Model.Any())
     {
         <table class="table">
@@ -16,18 +20,29 @@
                     <th>Size</th>
                     <th>Quantity</th>
                     <th>Price</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
-                    <tr>
-                        <td><img src="@item.Product?.ImageUrl" style="width: 100px; border-radius: 8px;" /></td>
-                        <td>@item.Product?.Name</td>
-                        <td>@item.Size</td>
-                        <td>@item.Quantity</td>
-                        <td>$@(item.Product != null ? (item.Product.Price * item.Quantity) : 0)</td>
-                    </tr>
+                    @if (item.Product != null)
+                    {
+                        <tr>
+                            <td><img src="@item.Product.ImageUrl" style="width: 100px; border-radius: 8px;" /></td>
+                            <td>@item.Product.Name</td>
+                            <td>@item.Size</td>
+                            <td>@item.Quantity</td>
+                            <td>$@(item.Product.Price * item.Quantity)</td>
+                            <td>
+                                <form asp-action="RemoveFromCart" asp-route-id="@item.Product.Id" method="post">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Remove Item">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>
@@ -40,7 +55,6 @@
     {
         <div class="text-center">
             <h4>Your cart is empty.</h4>
-            <a asp-action="Index" class="btn btn-primary mt-3">Continue Shopping</a>
         </div>
     }
 </div>
