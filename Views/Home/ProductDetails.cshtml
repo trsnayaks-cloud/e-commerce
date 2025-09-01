@@ -1,0 +1,50 @@
+@model Product
+@{
+    ViewData["Title"] = @Model.Name;
+}
+
+<div class="container mt-5">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary mb-4">&larr; Back to Products</a>
+    <div class="row">
+        <div class="col-md-6">
+            <img src="@Model.ImageUrl" class="img-fluid rounded product-details-img" alt="@Model.Name">
+        </div>
+        <div class="col-md-6">
+            <form asp-action="AddToCartConfirmed" asp-controller="Home" method="post">
+                <input type="hidden" name="id" value="@Model.Id" />
+
+                <h2>@Model.Name</h2>
+                <p class="text-muted">@Model.Description</p>
+                
+                <div class="price-container-details">
+                    <span class="display-4 font-weight-bold text-primary">$@Model.Price</span>
+                     @if (Model.OriginalPrice.HasValue && Model.OriginalPrice > Model.Price)
+                    {
+                        <span class="original-price-details text-muted h4"><s>$@Model.OriginalPrice</s></span>
+                        var discount = Math.Round((1 - (Model.Price / Model.OriginalPrice.Value)) * 100);
+                        <span class="discount-badge-details">@discount% OFF</span>
+                    }
+                </div>
+                
+                <hr>
+
+                <div class="form-group my-3">
+                    <label for="sizeSelect"><h5>Size</h5></label>
+                    <select class="form-control" name="size" id="sizeSelect">
+                        <option>Small</option>
+                        <option>Medium</option>
+                        <option>Large</option>
+                        <option>X-Large</option>
+                    </select>
+                </div>
+
+                <div class="form-group my-3">
+                    <label for="quantitySelect"><h5>Quantity</h5></label>
+                    <input type="number" class="form-control" name="quantity" id="quantitySelect" value="1" min="1">
+                </div>
+
+                <button type="submit" class="btn btn-success btn-lg btn-block mt-4">Confirm & Add to Cart</button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+@model List<Product>
+@{
+    ViewData["Title"] = "My Favourites";
+}
+
+<div class="container mt-5">
+    <h1 class="mb-4">My Favourites</h1>
+
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var product in Model)
+            {
+                <div class="col-md-4">
+                    <div class="card product-card">
+                        <a asp-action="ToggleFavourite" asp-route-id="@product.Id" class="favourite-icon active" title="Remove from Favourites"><i class="bi bi-heart"></i></a>
+                        <a asp-controller="Home" asp-action="ProductDetails" asp-route-id="@product.Id" class="product-link-wrapper">
+                            <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">@product.Name</h5>
+                                <div class="price-container">
+                                    <span class="price font-weight-bold">$@product.Price</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center">
+            <h4>You haven't added any products to your favourites yet.</h4>
+            <a asp-action="Index" class="btn btn-primary mt-3">Continue Shopping</a>
+        </div>
+    }
+</div>

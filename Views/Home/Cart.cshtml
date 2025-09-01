@@ -1,0 +1,46 @@
+@model List<CartItem>
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<div class="container mt-5">
+    <h1 class="mb-4">Shopping Cart</h1>
+
+    @if (Model.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th></th>
+                    <th>Size</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><img src="@item.Product?.ImageUrl" style="width: 100px; border-radius: 8px;" /></td>
+                        <td>@item.Product?.Name</td>
+                        <td>@item.Size</td>
+                        <td>@item.Quantity</td>
+                        <td>$@(item.Product != null ? (item.Product.Price * item.Quantity) : 0)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="text-end">
+            <h4>Total: $@Model.Sum(item => item.Product != null ? (item.Product.Price * item.Quantity) : 0)</h4>
+            <a href="#" class="btn btn-success mt-3">Proceed to Checkout</a>
+        </div>
+    }
+    else
+    {
+        <div class="text-center">
+            <h4>Your cart is empty.</h4>
+            <a asp-action="Index" class="btn btn-primary mt-3">Continue Shopping</a>
+        </div>
+    }
+</div>
